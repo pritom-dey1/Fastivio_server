@@ -60,3 +60,24 @@ export const getMe = async (req, res) => {
 export const logout = (req, res) => {
   res.clearCookie("token").json({ message: "Logged out" });
 };
+export const updateUser = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Not authenticated" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const updated = await User.findOneAndUpdate(
+      { email: decoded.email },
+      {
+        name: req.body.name,
+        photoURL: req.body.photoURL
+      },
+      { new: true }
+    );
+
+    res.json({ user: updated });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
