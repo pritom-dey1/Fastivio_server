@@ -106,26 +106,42 @@ router.patch("/users/:id/role", async (req, res) => {
 --------------------------------------------------- */
 router.get("/clubs", async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 10
-    const filter = {}
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const filter = {};
 
-    if (req.query.status) filter.status = req.query.status
+    if (req.query.status) filter.status = req.query.status;
 
-    const query = Club.find(filter).sort({ createdAt: -1 })
-    const clubs = await paginate(query, page, limit)
-    const total = await Club.countDocuments(filter)
+    const query = Club.find(filter).sort({ createdAt: -1 });
+    const clubs = await paginate(query, page, limit);
+
+    // Add membersCount and eventsCount
+    const clubsWithCounts = await Promise.all(
+      clubs.map(async (club) => {
+        const membersCount = await Membership.countDocuments({ clubId: club._id });
+        const eventsCount = await Event.countDocuments({ clubId: club._id });
+
+        return {
+          ...club._doc, // existing club fields
+          membersCount,
+          eventsCount,
+          managerEmail: club.managerEmail || "N/A",
+        };
+      })
+    );
+
+    const total = await Club.countDocuments(filter);
 
     res.json({
-      data: clubs,
+      data: clubsWithCounts,
       page,
       totalPages: Math.ceil(total / limit),
-      total
-    })
+      total,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
 /* -------------------------------------------------
    5) UPDATE CLUB STATUS (approve / reject)
