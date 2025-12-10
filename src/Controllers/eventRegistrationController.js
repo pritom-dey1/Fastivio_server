@@ -5,9 +5,20 @@ export const registerForEvent = async (req, res) => {
   try {
     const { eventId, clubId, paymentId } = req.body;
 
+    // ✅ Check if user already registered
+    const existing = await EventRegistration.findOne({
+      eventId,
+      userId: req.user._id,
+      status: "registered" // consider only active registrations
+    });
+
+    if (existing) {
+      return res.status(400).json({ error: "You have already registered for this event." });
+    }
+
     const registration = await EventRegistration.create({
       eventId,
-      userId: req.user._id,       // ✅ added userId
+      userId: req.user._id,       
       userEmail: req.user.email,
       clubId,
       paymentId,
@@ -39,6 +50,7 @@ export const cancelRegistration = async (req, res) => {
 
 // ClubManager: see registrations for their event
 export const getEventRegistrations = async (req, res) => {
+   console.log("Cancel endpoint hit with:", req.params.id);
   try {
     const registrations = await EventRegistration.find({ eventId: req.params.eventId });
     res.json(registrations);

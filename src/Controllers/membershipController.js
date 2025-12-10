@@ -27,25 +27,26 @@ export const getUserMemberships = async (req, res) => {
 };
 
 // Create membership (Admin / ClubManager / Member)
+// Create membership (Admin / ClubManager / Member)
 export const createMembership = async (req, res) => {
   try {
     const { userId, clubId, status, paymentId } = req.body;
 
     if (!userId || !clubId) {
-      return res.status(400).json({ error: "userId এবং clubId দরকার।" });
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // ❌ Duplicate check বাদ দাও
-    // const existing = await Membership.findOne({ userId, clubId });
-    // if (existing) {
-    //   return res.status(400).json({ error: "Membership already exists" });
-    // }
-
+    // Membership start date
+    const joinedAt = new Date();
+    const expiresAt = new Date(joinedAt);
+    expiresAt.setMonth(expiresAt.getMonth() + 3); 
     const membership = await Membership.create({
       userId,
       clubId,
       status: status || "active",
-      paymentId
+      paymentId,
+      joinedAt,
+      expiresAt
     });
 
     res.status(201).json(membership);
@@ -54,6 +55,7 @@ export const createMembership = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 // Update membership status (Admin or ClubManager)
 export const updateMembership = async (req, res) => {
   try {
