@@ -7,6 +7,7 @@ export const registerForEvent = async (req, res) => {
 
     const registration = await EventRegistration.create({
       eventId,
+      userId: req.user._id,       // ✅ added userId
       userEmail: req.user.email,
       clubId,
       paymentId,
