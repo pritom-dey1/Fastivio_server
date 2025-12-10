@@ -31,20 +31,25 @@ export const createClub = async (req, res) => {
 // Get all clubs (with search, filter, sort)
 export const getClubs = async (req, res) => {
   try {
-    let clubs = [];
+    // Only approved clubs will show to public
+    const query = { status: "approved" };
 
-    // উদাহরণ: filter, sort query থেকে
-    const query = {};
+    // Category filter
     if (req.query.category) query.category = req.query.category;
-    if (req.query.search) query.clubName = { $regex: req.query.search, $options: "i" };
 
-    clubs = await Club.find(query);
+    // Search filter
+    if (req.query.search) {
+      query.clubName = { $regex: req.query.search, $options: "i" };
+    }
+
+    // Fetch filtered clubs
+    let clubs = await Club.find(query);
 
     // Sorting
-    if (req.query.sort === "newest") clubs.sort((a,b)=>b.createdAt - a.createdAt);
-    else if (req.query.sort === "oldest") clubs.sort((a,b)=>a.createdAt - b.createdAt);
-    else if (req.query.sort === "highestFee") clubs.sort((a,b)=>b.membershipFee - a.membershipFee);
-    else if (req.query.sort === "lowestFee") clubs.sort((a,b)=>a.membershipFee - b.membershipFee);
+    if (req.query.sort === "newest") clubs.sort((a, b) => b.createdAt - a.createdAt);
+    else if (req.query.sort === "oldest") clubs.sort((a, b) => a.createdAt - b.createdAt);
+    else if (req.query.sort === "highestFee") clubs.sort((a, b) => b.membershipFee - a.membershipFee);
+    else if (req.query.sort === "lowestFee") clubs.sort((a, b) => a.membershipFee - b.membershipFee);
 
     res.json(clubs);
   } catch (err) {
