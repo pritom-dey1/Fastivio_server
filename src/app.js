@@ -20,7 +20,7 @@ app.use(cookieParser())
 app.use(morgan("dev"))
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://admirable-sfogliatella-88913a.netlify.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
