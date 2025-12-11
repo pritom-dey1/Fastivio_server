@@ -16,6 +16,7 @@ const payment = await Payment.create({
   clubId,
   eventId,
   stripePaymentIntentId,
+  status: status || "pending",
 });
 
     console.log("PAYMENT CREATED:", payment);
