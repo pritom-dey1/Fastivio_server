@@ -1,7 +1,7 @@
 // routes/paymentRoutes.js
 import express from "express";
 import Stripe from "stripe";
-import { createPayment, getAllPayments, getMyPayments } from "../controllers/paymentController.js";
+import { createPayment, getAllPayments, getMyPayments } from "../Controllers/paymentController.js";
 import { verifyJWT, verifyRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
