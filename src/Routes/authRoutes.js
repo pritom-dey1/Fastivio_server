@@ -1,5 +1,5 @@
 import express from "express";
-import { getMe, handleFirebaseAuth, logout, updateUser } from "../controllers/authController.js";
+import { getMe, handleFirebaseAuth, logout, updateUser } from "../Controllers/authController.js";
 
 const router = express.Router();
 
