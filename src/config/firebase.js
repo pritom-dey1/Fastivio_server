@@ -1,5 +1,4 @@
 import admin from "firebase-admin"
-console.log(process.env.SERVICE_ACCOUNT_TYPE);
 const serviceAccount = {
   type: process.env.SERVICE_ACCOUNT_TYPE,
   project_id: process.env.SERVICE_ACCOUNT_PROJECT_ID,

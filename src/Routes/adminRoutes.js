@@ -11,9 +11,7 @@ const router = express.Router()
 // 🔐 Admin-only Access
 router.use(verifyJWT, verifyRole("admin"))
 
-/* -------------------------------------------------
-   1) ADMIN OVERVIEW (Dashboard Summary)
---------------------------------------------------- */
+    // ADMIN OVERVIEW (Dashboard Summary)
 router.get("/overview", async (req, res) => {
   try {
     const [
@@ -44,17 +42,14 @@ router.get("/overview", async (req, res) => {
   }
 })
 
-/* -------------------------------------------------
-   Pagination Helper (DRY)
---------------------------------------------------- */
+  //  Pagination Helper (DRY)
 const paginate = (query, page, limit) => {
   const skip = (page - 1) * limit
   return query.skip(skip).limit(limit)
 }
 
-/* -------------------------------------------------
-   2) MANAGE USERS (List)
---------------------------------------------------- */
+
+  // MANAGE USERS (List)
 router.get("/users", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1
@@ -76,9 +71,7 @@ router.get("/users", async (req, res) => {
   }
 })
 
-/* -------------------------------------------------
-   3) UPDATE USER ROLE
---------------------------------------------------- */
+// UPDATE USER ROLE
 router.patch("/users/:id/role", async (req, res) => {
   try {
     const { role } = req.body
@@ -101,9 +94,7 @@ router.patch("/users/:id/role", async (req, res) => {
   }
 })
 
-/* -------------------------------------------------
-   4) MANAGE CLUBS (List + Filter)
---------------------------------------------------- */
+  // MANAGE CLUBS (List + Filter)
 router.get("/clubs", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -115,14 +106,13 @@ router.get("/clubs", async (req, res) => {
     const query = Club.find(filter).sort({ createdAt: -1 });
     const clubs = await paginate(query, page, limit);
 
-    // Add membersCount and eventsCount
     const clubsWithCounts = await Promise.all(
       clubs.map(async (club) => {
         const membersCount = await Membership.countDocuments({ clubId: club._id });
         const eventsCount = await Event.countDocuments({ clubId: club._id });
 
         return {
-          ...club._doc, // existing club fields
+          ...club._doc,
           membersCount,
           eventsCount,
           managerEmail: club.managerEmail || "N/A",
@@ -142,10 +132,7 @@ router.get("/clubs", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-/* -------------------------------------------------
-   5) UPDATE CLUB STATUS (approve / reject)
---------------------------------------------------- */
+// UPDATE CLUB STATUS (approve / reject)
 router.patch("/clubs/:id/status", async (req, res) => {
   try {
     const { status } = req.body
@@ -168,9 +155,7 @@ router.patch("/clubs/:id/status", async (req, res) => {
   }
 })
 
-/* -------------------------------------------------
-   6) PAYMENTS TABLE (with relations)
---------------------------------------------------- */
+//  PAYMENTS TABLE (with relations)
 router.get("/payments", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1

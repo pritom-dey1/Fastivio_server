@@ -3,13 +3,12 @@ import Payment from "../models/Payment.js";
 // Create payment record (after Stripe success or membership join)
 export const createPayment = async (req, res) => {
   try {
-    console.log("REQ BODY:", req.body);
-    console.log("REQ USER:", req.user);
+ 
 
     const { amount, type, clubId, eventId, stripePaymentIntentId, status } = req.body;
 
 const payment = await Payment.create({
-  userId: req.user._id,             // ✅ ensure userId is sent from token
+  userId: req.user._id,            
   userEmail: req.user.email,
   amount,
   type,
@@ -37,7 +36,7 @@ export const getAllPayments = async (req, res) => {
     if (req.user.role === "admin") {
       payments = await Payment.find();
     } else if (req.user.role === "clubManager") {
-      // Fetch payments related to the manager's clubs
+      
       payments = await Payment.find({ clubId: { $in: req.user.managedClubs || [] } });
     } else {
       return res.status(403).json({ error: "Forbidden" });

@@ -58,7 +58,7 @@ export const updateEvent = async (req, res) => {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ error: "Event not found" });
 
-    Object.assign(event, req.body); // update fields from body
+    Object.assign(event, req.body); 
     await event.save();
 
     res.json(event);

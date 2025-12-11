@@ -10,11 +10,10 @@ export const verifyJWT = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Fetch user from DB
     const userFromDB = await User.findOne({ email: decoded.email });
     if (!userFromDB) return res.status(401).json({ error: "Unauthorized: User not found" });
 
-    req.user = userFromDB; // attach DB user to request
+    req.user = userFromDB; 
     next();
   } catch (err) {
     console.error("JWT verification error:", err.message);
@@ -28,7 +27,6 @@ export const verifyRole = (roles) => {
   return (req, res, next) => {
     if (!req.user) return res.status(401).json({ error: "Unauthorized: No user attached" });
 
-    // Normalize roles to array
     const allowedRoles = Array.isArray(roles) ? roles : [roles];
 
     if (!allowedRoles.includes(req.user.role)) {

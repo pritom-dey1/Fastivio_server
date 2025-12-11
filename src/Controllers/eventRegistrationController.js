@@ -5,11 +5,10 @@ export const registerForEvent = async (req, res) => {
   try {
     const { eventId, clubId, paymentId } = req.body;
 
-    // ✅ Check if user already registered
     const existing = await EventRegistration.findOne({
       eventId,
       userId: req.user._id,
-      status: "registered" // consider only active registrations
+      status: "registered" 
     });
 
     if (existing) {

@@ -7,7 +7,6 @@ export const getAllMemberships = async (req, res) => {
     const memberships = await Membership.find().populate("clubId", "clubName");
     res.json(memberships);
   } catch (err) {
-    console.error("GET ALL MEMBERSHIPS ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -21,7 +20,6 @@ export const getUserMemberships = async (req, res) => {
     const memberships = await Membership.find({ userId }).populate("clubId");
     res.json(memberships);
   } catch (err) {
-    console.error("GET USER MEMBERSHIPS ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -36,7 +34,6 @@ export const createMembership = async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Membership start date
     const joinedAt = new Date();
     const expiresAt = new Date(joinedAt);
     expiresAt.setMonth(expiresAt.getMonth() + 3); 
@@ -69,7 +66,6 @@ export const updateMembership = async (req, res) => {
     await membership.save();
     res.json(membership);
   } catch (err) {
-    console.error("UPDATE MEMBERSHIP ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 };

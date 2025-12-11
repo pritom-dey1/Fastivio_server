@@ -9,16 +9,16 @@ router.use(verifyJWT);
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// 1️⃣ Create a new payment record directly (existing route)
+// Create a new payment record directly (existing route)
 router.post("/", verifyRole("member"), createPayment);
 
-// 2️⃣ Get all payments (Admin / Manager)
+// Get all payments (Admin / Manager)
 router.get("/", verifyJWT, getAllPayments);
 
-// 3️⃣ Get logged-in user's payments
+//Get logged-in user's payments
 router.get("/my", verifyRole("member"), getMyPayments);
 
-// 4️⃣ Create Stripe Checkout session for club membership
+// Create Stripe Checkout session for club membership
 router.post("/stripe-session", verifyRole("member"), async (req, res) => {
   try {
     const { amount, clubId } = req.body;
@@ -56,7 +56,7 @@ router.post("/stripe-session", verifyRole("member"), async (req, res) => {
   }
 });
 
-// 5️⃣ Webhook to confirm Stripe payment (optional but recommended)
+// Webhook to confirm Stripe payment 
 router.post("/webhook", express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
@@ -71,7 +71,6 @@ router.post("/webhook", express.raw({ type: 'application/json' }), async (req, r
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
 
-    // Create payment record
     await createPayment({
       body: {
         amount: session.amount_total / 100,
@@ -86,14 +85,12 @@ router.post("/webhook", express.raw({ type: 'application/json' }), async (req, r
       },
     }, { status: () => ({ json: () => {} }) }); // dummy response object
 
-    // TODO: Create membership here if you want
     console.log("Payment successful for user:", session.metadata.userEmail);
   }
 
   res.json({ received: true });
 });
 
-// PaymentIntent তৈরি করে clientSecret পাঠাবে
 router.post("/create-payment-intent", verifyRole("member"), async (req, res) => {
   try {
     const { amount, clubId } = req.body;
